@@ -1,17 +1,21 @@
 #!/bin/bash
 
-
-### LANDSAT
-##LaSRC
 set -e
 shopt -s nullglob
 
 if [ $1 == "--help" ]; then
-    echo "Usage: run_lasrc_fmask.sh <LANDSAT-8_FOLDER OR SENTINEL-2.SAFE>"
+    echo "Usage: \
+    docker run --rm \
+    -v /path/to/input/:/mnt/input-dir:rw \
+    -v /path/to/output:/mnt/output-dir:rw \
+    -v /path/to/auxiliaries/L8:/mnt/lasrc-aux:ro \
+    -t lasrcfmask S2A_MSIL1C_20190105T132231_N0207_R038_T23LLF_20190105T145859.SAFE <LANDSAT-8_FOLDER OR SENTINEL-2.SAFE>"
     exit 0
 fi
 
+##Landsat-8
 if [[ $1 == "LC08"* ]]; then
+    ##LaSRC
     SCENE_ID=$1
     WORKDIR=/work/${SCENE_ID}
     INDIR=/mnt/input-dir/${SCENE_ID}
@@ -68,9 +72,9 @@ if [[ $1 == "LC08"* ]]; then
 
     rm -rf $WORKDIR
 
+## SENTINEL-2
 elif [[ $1 == "S2"* ]]; then
-  ## SENTINEL
-
+    ##LaSRC
     SAFENAME=$1
     SAFENAME=S2A_MSIL1C_20190105T132231_N0207_R038_T23LLF_20190105T145859.SAFE
 
@@ -124,5 +128,4 @@ elif [[ $1 == "S2"* ]]; then
     done
 
     rm -rf $WORKDIR
-
 fi

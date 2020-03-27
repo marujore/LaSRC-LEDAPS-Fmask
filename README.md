@@ -35,8 +35,7 @@ $ docker run --rm \
     -t lasrcfmask LC08_L1TP_220069_20190112_20190131_01_T1
 ```
 
-To process a Sentinel-2 scene (e.g. `S2A_MSIL1C_20190105T132231_N0207_R038_T23LLF_20190105T145859.SAFE`)
-that is located on your PC run
+To process a Sentinel-2 scene (e.g. `S2A_MSIL1C_20190105T132231_N0207_R038_T23LLF_20190105T145859.SAFE`) run
 
 ```bash
 $ docker run --rm \
@@ -46,4 +45,4 @@ $ docker run --rm \
     -t lasrcfmask S2A_MSIL1C_20190105T132231_N0207_R038_T23LLF_20190105T145859.SAFE
 ```
 
-Results are written to the folder mounted on `/mnt/output-dir/SCENEID`.
+Results are written on mounted `/mnt/output-dir/SCENEID`.
