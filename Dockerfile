@@ -4,7 +4,7 @@ MAINTAINER "Rennan Marujo <rennanmarujo@gmail.com>"
 USER root
 
 RUN apt-get update && \
-    apt-get install -y \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y \
         'gcc' \
         'make' \
         'curl' \
@@ -24,8 +24,12 @@ RUN apt-get update && \
         'libidn11-dev' \
         'zlib1g-dev' \
         'liblzma-dev' \
-        'nano' \
-        'libopenjp2-tools' && \
+        'libopenjp2-tools' \
+        'unzip' \
+        'libxmu6' \
+        'openjdk-11-jdk' \
+        'xserver-xorg' \
+        'nano' && \
     apt-get autoremove -y && \
     rm -rf /var/lib/apt/lists/*
 
@@ -128,26 +132,23 @@ RUN make && \
     make clean && \
     ls -l $PREFIX
 
-
-# cloud masking
-RUN curl -L https://github.com/USGS-EROS/espa-cloud-masking/archive/cfmask-v2.0.2.tar.gz -o /tmp/cloud_masking.tar.gz && \
-    tar xzf /tmp/cloud_masking.tar.gz && \
-    mv espa-cloud-masking-cfmask-v2.0.2 /opt/espa-cloud-masking && \
-    rm /tmp/cloud_masking.tar.gz
-
-ENV PREFIX=/opt/espa-cloud-masking/build
-
-WORKDIR /opt/espa-cloud-masking
-RUN make && \
-    make install && \
-    make clean && \
-    ls -l $PREFIX
-
-
 ENV L8_AUX_DIR=/mnt/lasrc-aux
 ENV LASRC_AUX_DIR=$L8_AUX_DIR
-ENV ESUN=/opt/espa-cloud-masking/cfmask/static_data
 ENV ESPA_SCHEMA=/opt/espa-product-formatter/build/schema/espa_internal_metadata_v2_2.xsd
 ENV PATH=/opt/espa-product-formatter/build/bin:/opt/espa-cloud-masking/build/bin:/opt/espa-surface-reflectance/build/bin:$PATH
 
+# cloud masking FMASK 4
+COPY Fmask_4_1_Linux.install .
+RUN chmod +x Fmask_4_1_Linux.install && \
+    ./Fmask_4_1_Linux.install -mode silent -agreeToLicense yes && \
+    rm Fmask_4_1_Linux.install
+
+ENV MCR_CACHE_ROOT="/tmp/mcr-cache"
+
 WORKDIR /work
+
+COPY run_lasrc_fmask.sh /usr/local/bin/run_lasrc_fmask.sh
+RUN chmod +x /usr/local/bin/run_lasrc_fmask.sh
+
+ENTRYPOINT ["/usr/local/bin/run_lasrc_fmask.sh"]
+CMD ["--help"]
