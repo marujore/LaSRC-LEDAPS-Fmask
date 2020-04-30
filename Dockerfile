@@ -6,6 +6,7 @@ USER root
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y \
         'gcc' \
+        'wget' \
         'make' \
         'curl' \
         'gdal-bin' \
@@ -17,11 +18,10 @@ RUN apt-get update && \
         'libjpeg-dev' \
         'libxml2-dev' \
         'libgeotiff-dev' \
-        'hdf4-tools' \
-        'libhdf4-dev' \
         'libhdf5-dev' \
         'libnetcdf-dev' \
         'libidn11-dev' \
+        'zlib1g' \
         'zlib1g-dev' \
         'liblzma-dev' \
         'libopenjp2-tools' \
@@ -29,12 +29,26 @@ RUN apt-get update && \
         'libxmu6' \
         'openjdk-11-jdk' \
         'xserver-xorg' \
-        'nano' && \
-    apt-get autoremove -y && \
-    rm -rf /var/lib/apt/lists/*
+        'gfortran' \
+        'git' \
+        'nano' \
+        'bison' \
+        'flex'
+
+
+#Build HDF4
+WORKDIR /tmp
+RUN wget https://support.hdfgroup.org/ftp/HDF/releases/HDF4.2.15/src/hdf-4.2.15.tar.gz
+RUN tar zxf hdf-4.2.15.tar.gz
+RUN cd hdf-4.2.15 && \
+    ./configure --prefix=/usr --disable-fortran --enable-production --enable-shared --disable-netcdf && \
+    make -j16 && \
+    make -j16 install && \
+    make clean
 
 
 #Build HDF-EOS2
+WORKDIR /tmp
 RUN curl https://observer.gsfc.nasa.gov/ftp/edhs/hdfeos/latest_release/HDF-EOS2.20v1.00.tar.Z -o /tmp/hdfeos.tar.Z
 RUN tar xzf /tmp/hdfeos.tar.Z -C /opt
 WORKDIR /opt/hdfeos
@@ -46,6 +60,7 @@ RUN ./configure CC=/usr/bin/h4cc --prefix=/opt/hdfeos/build && \
 
 
 #Build HDF-EOS5
+WORKDIR /tmp
 RUN curl https://observer.gsfc.nasa.gov/ftp/edhs/hdfeos5/latest_release/HDF-EOS5.1.16.tar.Z -o /tmp/hdfeos5.tar.Z
 RUN tar xzf /tmp/hdfeos5.tar.Z -C /opt
 WORKDIR /opt/hdfeos5
@@ -94,6 +109,7 @@ ENV ESPALIB=/opt/espa-product-formatter/raw_binary/lib
 
 
 # product formatter
+WORKDIR /tmp
 RUN curl -L https://github.com/USGS-EROS/espa-product-formatter/archive/product_formatter_v1.19.0.tar.gz -o /tmp/product_formatter.tar.gz && \
    tar xzf /tmp/product_formatter.tar.gz && \
    mv espa-product-formatter-product_formatter_v1.19.0 /opt/espa-product-formatter && \
@@ -107,7 +123,8 @@ RUN make && \
    ls -l $PREFIX
 
 
-# surface reflectance
+# surface reflectance LaSRC
+WORKDIR /tmp
 RUN curl -L https://github.com/USGS-EROS/espa-surface-reflectance/archive/master.tar.gz -o /tmp/lasrc.tar.gz && \
     tar xzf /tmp/lasrc.tar.gz && \
     mv espa-surface-reflectance-master /opt/espa-surface-reflectance && \
@@ -137,6 +154,18 @@ ENV LASRC_AUX_DIR=$L8_AUX_DIR
 ENV ESPA_SCHEMA=/opt/espa-product-formatter/build/schema/espa_internal_metadata_v2_2.xsd
 ENV PATH=/opt/espa-product-formatter/build/bin:/opt/espa-cloud-masking/build/bin:/opt/espa-surface-reflectance/build/bin:$PATH
 
+# surface reflectance LEDAPS
+WORKDIR /opt/espa-surface-reflectance/ledaps/ledapsSrc/src
+RUN make && \
+    make install
+WORKDIR /opt/espa-surface-reflectance/ledaps/ledapsAncSrc
+RUN make && \
+    make install
+RUN mkdir /usr/tmp
+ENV PATH=/opt/espa-surface-reflectance/ledaps/ledapsSrc/scripts/:$PATH
+ENV LEDAPS_AUX_DIR=/mnt/ledaps-aux/
+
+
 # cloud masking FMASK 4
 COPY Fmask_4_1_Linux.install .
 RUN chmod +x Fmask_4_1_Linux.install && \
@@ -147,8 +176,11 @@ ENV MCR_CACHE_ROOT="/tmp/mcr-cache"
 
 WORKDIR /work
 
-COPY run_lasrc_fmask.sh /usr/local/bin/run_lasrc_fmask.sh
-RUN chmod +x /usr/local/bin/run_lasrc_fmask.sh
+COPY run_lasrc_ledaps_fmask.sh /usr/local/bin/run_lasrc_ledaps_fmask.sh
+RUN chmod +x /usr/local/bin/run_lasrc_ledaps_fmask.sh
 
-ENTRYPOINT ["/usr/local/bin/run_lasrc_fmask.sh"]
+ENTRYPOINT ["/usr/local/bin/run_lasrc_ledaps_fmask.sh"]
 CMD ["--help"]
+
+RUN apt-get autoremove -y && \
+    rm -rf /var/lib/apt/lists/*

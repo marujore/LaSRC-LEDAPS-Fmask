@@ -6,16 +6,16 @@ shopt -s nullglob
 if [ $1 == "--help" ]; then
     echo "Usage: \
     docker run --rm \
-    -v /path/to/input/:/mnt/input-dir:rw \
+    -v /path/to/input/:/mnt/input-dir:ro \
     -v /path/to/output:/mnt/output-dir:rw \
-    -v /path/to/auxiliaries/L8:/mnt/lasrc-aux:ro \
-    -t lasrcfmask S2A_MSIL1C_20190105T132231_N0207_R038_T23LLF_20190105T145859.SAFE <LANDSAT-8_FOLDER OR SENTINEL-2.SAFE>"
+    -v /path/to/lasrc_auxiliaries/L8:/mnt/lasrc-aux:ro \
+    -v /path/to/ledaps_auxiliaries:/mnt/ledaps-aux:ro
+    -t lasrcfmask <LANDSAT-4,5,7,8 FOLDER OR SENTINEL-2.SAFE>"
     exit 0
 fi
 
-##Landsat-8
-if [[ $1 == "LC08"* ]]; then
-    ##LaSRC
+##Landsat
+if [[ $1 == "LT04"* ]] || [[ $1 == "LT05"* ]] || [[ $1 == "LE07"* ]] || [[ $1 == "LC08"* ]]; then
     SCENE_ID=$1
     WORKDIR=/work/${SCENE_ID}
     INDIR=/mnt/input-dir/${SCENE_ID}
@@ -45,7 +45,11 @@ if [[ $1 == "LC08"* ]]; then
 
     # run ESPA stack
     convert_lpgs_to_espa --mtl=${SCENE_ID}_MTL.txt
-    do_lasrc_landsat.py --xml ${SCENE_ID}.xml --write_toa
+    if [[ $1 == "LC08"* ]]; then
+        do_lasrc_landsat.py --xml ${SCENE_ID}.xml --write_toa
+    else #Landsat 4,5,7
+        do_ledaps.py --xml ${SCENE_ID}.xml
+    fi
     convert_espa_to_gtif --xml=${SCENE_ID}.xml --gtif=$SCENE_ID --del_src_files
 
 
@@ -53,7 +57,6 @@ if [[ $1 == "LC08"* ]]; then
     MCROOT=/usr/local/MATLAB/MATLAB_Runtime/v96
 
     /usr/GERS/Fmask_4_1/application/run_Fmask_4_1.sh $MCROOT "$@"
-
 
     ## Copy outputs from workdir
     mkdir $OUTDIR
@@ -74,9 +77,7 @@ if [[ $1 == "LC08"* ]]; then
 
 ## SENTINEL-2
 elif [[ $1 == "S2"* ]]; then
-    ##LaSRC
     SAFENAME=$1
-    SAFENAME=S2A_MSIL1C_20190105T132231_N0207_R038_T23LLF_20190105T145859.SAFE
 
     SAFEDIR=/mnt/input-dir/${SAFENAME}
     SCENE_ID=${SAFENAME:0:-5}
@@ -129,3 +130,5 @@ elif [[ $1 == "S2"* ]]; then
 
     rm -rf $WORKDIR
 fi
+
+exit 0

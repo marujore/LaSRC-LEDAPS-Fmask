@@ -4,7 +4,8 @@ Copyright (c) 2019-2020 Rennan Marujo
 
 Copyright for portions of FMASK docker 4.0 code are held by Dion Häfner, 2018 as part of project fmaskilicious (https://github.com/DHI-GRAS/fmaskilicious).
 Copyright for portions of LaSRC 1.4 docker code are held by DHI GRAS A/S, 2018 as part of project lasrclicious (https://github.com/DHI-GRAS/lasrclicious).
-All other copyright for project LaSRC-Fmask are held by Rennan Marujo, 2019-2020.
+Copyright for portions of LEDAPS docker code are held by Rennan Marujo, 2020 as part of project ledaps_docker (https://github.com/marujore/LEDAPS_docker)
+All other copyright for project LaSRC-LEDAPS-Fmask are held by Rennan Marujo, 2019-2020.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
