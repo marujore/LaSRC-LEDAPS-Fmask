@@ -18,10 +18,11 @@ fi
 if [[ $1 == "LT04"* ]] || [[ $1 == "LT05"* ]] || [[ $1 == "LE07"* ]] || [[ $1 == "LC08"* ]]; then
     SCENE_ID=$1
     WORKDIR=/work/${SCENE_ID}
-    INDIR=/mnt/input-dir/${SCENE_ID}
-    OUTDIR=/mnt/output-dir/${SCENE_ID}
-    MTD_FILES="${INDIR}/${SCENE_ID}_MTL.txt ${INDIR}/${SCENE_ID}_ANG.txt"
-    TIF_PATTERNS="${INDIR}/${SCENE_ID}_*.tif ${INDIR}/${SCENE_ID}_*.TIF"
+    INDIR=/mnt/input-dir
+    OUTDIR=/mnt/output-dir
+
+    MTD_FILES=$(find /mnt/input-dir -name "${SCENE_ID}_MTL.txt" -o -name "${SCENE_ID}_ANG.txt")
+    TIF_PATTERNS="${SCENE_ID}_*.tif -iname ${SCENE_ID}_*.TIF"
 
     # ensure that workdir/sceneid is clean
     rm -rf ${WORKDIR}
@@ -29,7 +30,7 @@ if [[ $1 == "LT04"* ]] || [[ $1 == "LT05"* ]] || [[ $1 == "LE07"* ]] || [[ $1 ==
     cd $WORKDIR
 
     # only make files with the correct scene ID visible
-    for f in $TIF_PATTERNS; do
+    for f in $(find /mnt/input-dir -iname "${SCENE_ID}*.tif"); do
         echo $f
         if gdalinfo $f | grep -q 'Block=.*x1\s'; then
             ln -s $(readlink -f $f) $WORKDIR/$(basename $f)
@@ -59,7 +60,7 @@ if [[ $1 == "LT04"* ]] || [[ $1 == "LT05"* ]] || [[ $1 == "LE07"* ]] || [[ $1 ==
     /usr/GERS/Fmask_4_1/application/run_Fmask_4_1.sh $MCROOT "$@"
 
     ## Copy outputs from workdir
-    mkdir $OUTDIR
+    mkdir -p $OUTDIR
     OUT_PATTERNS="$WORKDIR/${SCENE_ID}_toa_*.tif $WORKDIR/${SCENE_ID}_sr_*.tif $WORKDIR/${SCENE_ID}_bt_*.tif $WORKDIR/${SCENE_ID}_radsat_qa.tif"
     for f in $OUT_PATTERNS; do
         cp $f $OUTDIR/$(basename $f)
