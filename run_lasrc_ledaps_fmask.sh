@@ -14,14 +14,23 @@ if [ $1 == "--help" ]; then
     exit 0
 fi
 
+
 ##Landsat
 if [[ $1 == "LT04"* ]] || [[ $1 == "LT05"* ]] || [[ $1 == "LE07"* ]] || [[ $1 == "LC08"* ]]; then
     SCENE_ID=$1
     WORKDIR=/work/${SCENE_ID}
-    INDIR=/mnt/input-dir
-    OUTDIR=/mnt/output-dir
 
-    MTD_FILES=$(find /mnt/input-dir -name "${SCENE_ID}_MTL.txt" -o -name "${SCENE_ID}_ANG.txt")
+    # Set default directories to the INDIR and OUTDIR
+    # You can customize it using INDIR=/my/custom OUTDIR=/my/out run_lasrc_ledaps_fmask.sh
+    if [ -z "${INDIR}" ]; then
+        INDIR=/mnt/input-dir
+    fi
+
+    if [ -z "${INDIR}" ]; then
+        OUTDIR=/mnt/output-dir
+    fi
+
+    MTD_FILES=$(find ${INDIR} -name "${SCENE_ID}_MTL.txt" -o -name "${SCENE_ID}_ANG.txt")
     TIF_PATTERNS="${SCENE_ID}_*.tif -iname ${SCENE_ID}_*.TIF"
 
     # ensure that workdir/sceneid is clean
@@ -30,7 +39,7 @@ if [[ $1 == "LT04"* ]] || [[ $1 == "LT05"* ]] || [[ $1 == "LE07"* ]] || [[ $1 ==
     cd $WORKDIR
 
     # only make files with the correct scene ID visible
-    for f in $(find /mnt/input-dir -iname "${SCENE_ID}*.tif"); do
+    for f in $(find ${INDIR} -iname "${SCENE_ID}*.tif"); do
         echo $f
         if gdalinfo $f | grep -q 'Block=.*x1\s'; then
             ln -s $(readlink -f $f) $WORKDIR/$(basename $f)
