@@ -1,6 +1,6 @@
-# LaSRC 2.0, LEDAPS 3.4.0 and FMASK 4.1
+# LaSRC 2.0, LEDAPS 3.4.0 and FMASK 4.2
 
-Landsat-4,5,7 atmospheric correction through LEDAPS 3.4.0, Landsat-8 and Sentinel-2 atmospheric correction through LaSRC 2.0, cloud masking FMASK 4.1.
+Landsat-4,5,7 atmospheric correction through LEDAPS 3.4.0, Landsat-8 and Sentinel-2 atmospheric correction through LaSRC 2.0, cloud masking FMASK 4.2.
 
 ## Dependencies
 
@@ -17,7 +17,7 @@ Download the ``https://edclpdsftp.cr.usgs.gov/downloads/auxiliaries/lasrc_auxili
 
 ## Installation
 
-1. [Download FMask 4.1 standalone Linux installer](https://github.com/GERSL/Fmask)
+1. [Download FMask 4.2 standalone Linux installer](https://github.com/GERSL/Fmask)
    and copy it into the root of this repository.
 
 2. Run
