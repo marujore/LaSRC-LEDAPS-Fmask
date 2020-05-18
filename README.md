@@ -56,7 +56,7 @@ To process a Sentinel-2 scene (e.g. `S2A_MSIL1C_20190105T132231_N0207_R038_T23LL
 $ docker run --rm \
     -v /path/to/input/:/mnt/input-dir:rw \
     -v /path/to/output:/mnt/output-dir:rw \
-    -v /path/to/lasrc_auxiliaries:/mnt/lasrc-aux:ro \
+    -v /path/to/lasrc_auxiliaries/L8:/mnt/lasrc-aux:ro \
     -t lasrc_ledaps_fmask S2A_MSIL1C_20190105T132231_N0207_R038_T23LLF_20190105T145859.SAFE
 ```
 

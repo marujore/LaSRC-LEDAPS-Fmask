@@ -56,7 +56,7 @@ if [[ $1 == "LT04"* ]] || [[ $1 == "LT05"* ]] || [[ $1 == "LE07"* ]] || [[ $1 ==
     ##FMASK
     MCROOT=/usr/local/MATLAB/MATLAB_Runtime/v96
 
-    /usr/GERS/Fmask_4_1/application/run_Fmask_4_1.sh $MCROOT "$@"
+    /usr/GERS/Fmask_4_2/application/run_Fmask_4_2.sh $MCROOT "$@"
 
     ## Copy outputs from workdir
     mkdir $OUTDIR
@@ -66,7 +66,7 @@ if [[ $1 == "LT04"* ]] || [[ $1 == "LT05"* ]] || [[ $1 == "LE07"* ]] || [[ $1 ==
     done
     OUT_PATTERNS="$WORKDIR/${SCENE_ID}_Fmask4*.tif"
     for f in $OUT_PATTERNS; do
-        cp $f $OUTDIR/${SCENE_ID}_Fmask41.tif
+        cp $f $OUTDIR/${SCENE_ID}_Fmask4.tif
     done
 
     for f in $MTD_FILES; do
@@ -115,7 +115,7 @@ elif [[ $1 == "S2"* ]]; then
     ##FMASK
     MCROOT=/usr/local/MATLAB/MATLAB_Runtime/v96
     cd ${GRANULE_SCENE}
-    /usr/GERS/Fmask_4_1/application/run_Fmask_4_1.sh $MCROOT "$@"
+    /usr/GERS/Fmask_4_2/application/run_Fmask_4_2.sh $MCROOT "$@"
 
     ## Copy outputs from workdir
     mkdir $OUTDIR
@@ -125,7 +125,7 @@ elif [[ $1 == "S2"* ]]; then
     done
     OUT_PATTERNS="${GRANULE_SCENE}/FMASK_DATA/*_Fmask4*.tif"
     for f in $OUT_PATTERNS; do
-        cp $f $OUTDIR/${SCENE_ID}_Fmask41.tif
+        cp $f $OUTDIR/${SCENE_ID}_Fmask4.tif
     done
 
     rm -rf $WORKDIR
