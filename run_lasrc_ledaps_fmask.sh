@@ -14,21 +14,21 @@ if [ $1 == "--help" ]; then
     exit 0
 fi
 
+# Set default directories to the INDIR and OUTDIR
+# You can customize it using INDIR=/my/custom OUTDIR=/my/out run_lasrc_ledaps_fmask.sh
+if [ -z "${INDIR}" ]; then
+    INDIR=/mnt/input-dir
+fi
+
+if [ -z "${INDIR}" ]; then
+    OUTDIR=/mnt/output-dir
+fi
+
 
 ##Landsat
 if [[ $1 == "LT04"* ]] || [[ $1 == "LT05"* ]] || [[ $1 == "LE07"* ]] || [[ $1 == "LC08"* ]]; then
     SCENE_ID=$1
     WORKDIR=/work/${SCENE_ID}
-
-    # Set default directories to the INDIR and OUTDIR
-    # You can customize it using INDIR=/my/custom OUTDIR=/my/out run_lasrc_ledaps_fmask.sh
-    if [ -z "${INDIR}" ]; then
-        INDIR=/mnt/input-dir
-    fi
-
-    if [ -z "${INDIR}" ]; then
-        OUTDIR=/mnt/output-dir
-    fi
 
     MTD_FILES=$(find ${INDIR} -name "${SCENE_ID}_MTL.txt" -o -name "${SCENE_ID}_ANG.txt")
     TIF_PATTERNS="${SCENE_ID}_*.tif -iname ${SCENE_ID}_*.TIF"
@@ -92,8 +92,8 @@ elif [[ $1 == "S2"* ]]; then
     SAFEDIR=/mnt/input-dir/${SAFENAME}
     SCENE_ID=${SAFENAME:0:-5}
     WORKDIR=/work/${SAFENAME}
-    OUTDIR=/mnt/output-dir/${SCENE_ID}
-    JP2_PATTERNS="${INDIR}/${SCENE_ID}_*.jp2 ${INDIR}/${SCENE_ID}_*.JP2"
+    OUTDIR=/mnt/output-dir/
+    JP2_PATTERNS=$(find ${INDIR} -name "${SCENE_ID}_*.jp2" -o -name "${SCENE_ID}_*.JP2")
 
 
     # ensure that workdir/sceneid is clean
@@ -128,7 +128,7 @@ elif [[ $1 == "S2"* ]]; then
     /usr/GERS/Fmask_4_1/application/run_Fmask_4_1.sh $MCROOT "$@"
 
     ## Copy outputs from workdir
-    mkdir $OUTDIR
+    mkdir -p $OUTDIR
     OUT_PATTERNS="${IMG_DATA}/${SCENE_ID}_sr_*.tif"
     for f in $OUT_PATTERNS; do
         cp $f $OUTDIR/$(basename $f)
