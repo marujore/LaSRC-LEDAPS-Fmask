@@ -14,14 +14,24 @@ if [ $1 == "--help" ]; then
     exit 0
 fi
 
+# Set default directories to the INDIR and OUTDIR
+# You can customize it using INDIR=/my/custom OUTDIR=/my/out run_lasrc_ledaps_fmask.sh
+if [ -z "${INDIR}" ]; then
+    INDIR=/mnt/input-dir
+fi
+
+if [ -z "${INDIR}" ]; then
+    OUTDIR=/mnt/output-dir
+fi
+
+
 ##Landsat
 if [[ $1 == "LT04"* ]] || [[ $1 == "LT05"* ]] || [[ $1 == "LE07"* ]] || [[ $1 == "LC08"* ]]; then
     SCENE_ID=$1
     WORKDIR=/work/${SCENE_ID}
-    INDIR=/mnt/input-dir/${SCENE_ID}
-    OUTDIR=/mnt/output-dir/${SCENE_ID}
-    MTD_FILES="${INDIR}/${SCENE_ID}_MTL.txt ${INDIR}/${SCENE_ID}_ANG.txt"
-    TIF_PATTERNS="${INDIR}/${SCENE_ID}_*.tif ${INDIR}/${SCENE_ID}_*.TIF"
+
+    MTD_FILES=$(find ${INDIR} -name "${SCENE_ID}_MTL.txt" -o -name "${SCENE_ID}_ANG.txt")
+    TIF_PATTERNS="${SCENE_ID}_*.tif -iname ${SCENE_ID}_*.TIF"
 
     # ensure that workdir/sceneid is clean
     rm -rf ${WORKDIR}
@@ -29,7 +39,7 @@ if [[ $1 == "LT04"* ]] || [[ $1 == "LT05"* ]] || [[ $1 == "LE07"* ]] || [[ $1 ==
     cd $WORKDIR
 
     # only make files with the correct scene ID visible
-    for f in $TIF_PATTERNS; do
+    for f in $(find ${INDIR} -iname "${SCENE_ID}*.tif"); do
         echo $f
         if gdalinfo $f | grep -q 'Block=.*x1\s'; then
             ln -s $(readlink -f $f) $WORKDIR/$(basename $f)
@@ -59,7 +69,7 @@ if [[ $1 == "LT04"* ]] || [[ $1 == "LT05"* ]] || [[ $1 == "LE07"* ]] || [[ $1 ==
     /usr/GERS/Fmask_4_2/application/run_Fmask_4_2.sh $MCROOT "$@"
 
     ## Copy outputs from workdir
-    mkdir $OUTDIR
+    mkdir -p $OUTDIR
     OUT_PATTERNS="$WORKDIR/${SCENE_ID}_toa_*.tif $WORKDIR/${SCENE_ID}_sr_*.tif $WORKDIR/${SCENE_ID}_bt_*.tif $WORKDIR/${SCENE_ID}_radsat_qa.tif $WORKDIR/${SCENE_ID}_sensor*.tif $WORKDIR/${SCENE_ID}_solar*.tif"
     for f in $OUT_PATTERNS; do
         cp $f $OUTDIR/$(basename $f)
@@ -82,8 +92,8 @@ elif [[ $1 == "S2"* ]]; then
     SAFEDIR=/mnt/input-dir/${SAFENAME}
     SCENE_ID=${SAFENAME:0:-5}
     WORKDIR=/work/${SAFENAME}
-    OUTDIR=/mnt/output-dir/${SCENE_ID}
-    JP2_PATTERNS="${INDIR}/${SCENE_ID}_*.jp2 ${INDIR}/${SCENE_ID}_*.JP2"
+    OUTDIR=/mnt/output-dir/
+    JP2_PATTERNS=$(find ${INDIR} -name "${SCENE_ID}_*.jp2" -o -name "${SCENE_ID}_*.JP2")
 
 
     # ensure that workdir/sceneid is clean
@@ -118,7 +128,7 @@ elif [[ $1 == "S2"* ]]; then
     /usr/GERS/Fmask_4_2/application/run_Fmask_4_2.sh $MCROOT "$@"
 
     ## Copy outputs from workdir
-    mkdir $OUTDIR
+    mkdir -p $OUTDIR
     OUT_PATTERNS="${IMG_DATA}/${SCENE_ID}_sr_*.tif"
     for f in $OUT_PATTERNS; do
         cp $f $OUTDIR/$(basename $f)
