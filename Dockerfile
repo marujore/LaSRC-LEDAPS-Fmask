@@ -167,10 +167,10 @@ ENV LEDAPS_AUX_DIR=/mnt/ledaps-aux/
 
 
 # cloud masking FMASK 4
-COPY Fmask_4_1_Linux.install .
-RUN chmod +x Fmask_4_1_Linux.install && \
-    ./Fmask_4_1_Linux.install -mode silent -agreeToLicense yes && \
-    rm Fmask_4_1_Linux.install
+COPY Fmask_4_2_Linux.install .
+RUN chmod +x Fmask_4_2_Linux.install && \
+    ./Fmask_4_2_Linux.install -mode silent -agreeToLicense yes && \
+    rm Fmask_4_2_Linux.install
 
 ENV MCR_CACHE_ROOT="/tmp/mcr-cache"
 

@@ -1,6 +1,6 @@
-# LaSRC 2.0, LEDAPS 3.4.0 and FMASK 4.1
+# LaSRC 2.0, LEDAPS 3.4.0 and FMASK 4.2
 
-Landsat-4,5,7 atmospheric correction through LEDAPS 3.4.0, Landsat-8 and Sentinel-2 atmospheric correction through LaSRC 2.0, cloud masking FMASK 4.1.
+Landsat-4,5,7 atmospheric correction through LEDAPS 3.4.0, Landsat-8 and Sentinel-2 atmospheric correction through LaSRC 2.0, cloud masking FMASK 4.2.
 
 ## Dependencies
 
@@ -17,7 +17,7 @@ Download the ``https://edclpdsftp.cr.usgs.gov/downloads/auxiliaries/lasrc_auxili
 
 ## Installation
 
-1. [Download FMask 4.1 standalone Linux installer](https://github.com/GERSL/Fmask)
+1. [Download FMask 4.2 standalone Linux installer](https://github.com/GERSL/Fmask)
    and copy it into the root of this repository.
 
 2. Run
@@ -56,7 +56,7 @@ To process a Sentinel-2 scene (e.g. `S2A_MSIL1C_20190105T132231_N0207_R038_T23LL
 $ docker run --rm \
     -v /path/to/input/:/mnt/input-dir:rw \
     -v /path/to/output:/mnt/output-dir:rw \
-    -v /path/to/lasrc_auxiliaries:/mnt/lasrc-aux:ro \
+    -v /path/to/lasrc_auxiliaries/L8:/mnt/lasrc-aux:ro \
     -t lasrc_ledaps_fmask S2A_MSIL1C_20190105T132231_N0207_R038_T23LLF_20190105T145859.SAFE
 ```
 
