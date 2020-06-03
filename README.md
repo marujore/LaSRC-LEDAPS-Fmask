@@ -1,6 +1,6 @@
-# LaSRC 2.0, LEDAPS 3.4.0 and FMASK 4.2
+# LaSRC 2.1, LEDAPS 3.4.0 and FMASK 4.2
 
-Landsat-4,5,7 atmospheric correction through LEDAPS 3.4.0, Landsat-8 and Sentinel-2 atmospheric correction through LaSRC 2.0, cloud masking FMASK 4.2.
+Landsat-4,5,7 atmospheric correction through LEDAPS 3.4.0, Landsat-8 and Sentinel-2 atmospheric correction through LaSRC 2.1, cloud masking FMASK 4.2.
 
 ## Dependencies
 
