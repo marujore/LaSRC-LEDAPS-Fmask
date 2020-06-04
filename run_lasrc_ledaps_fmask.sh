@@ -14,20 +14,19 @@ if [ $1 == "--help" ]; then
     exit 0
 fi
 
-# Set default directories to the INDIR and OUTDIR
+# Set default directories to the INDIR
 # You can customize it using INDIR=/my/custom OUTDIR=/my/out run_lasrc_ledaps_fmask.sh
 if [ -z "${INDIR}" ]; then
     INDIR=/mnt/input-dir
 fi
 
-if [ -z "${OUTDIR}" ]; then
-    OUTDIR=/mnt/output-dir/
-fi
-
-
 ##Landsat
 if [[ $1 == "LT04"* ]] || [[ $1 == "LT05"* ]] || [[ $1 == "LE07"* ]] || [[ $1 == "LC08"* ]]; then
     SCENE_ID=$1
+    # Set default OUTDIR
+    if [ -z "${OUTDIR}" ]; then
+        OUTDIR=/mnt/output-dir/${SCENE_ID}
+    fi
     WORKDIR=/work/${SCENE_ID}
 
     MTD_FILES=$(find ${INDIR} -name "${SCENE_ID}_MTL.txt" -o -name "${SCENE_ID}_ANG.txt")
@@ -69,7 +68,6 @@ if [[ $1 == "LT04"* ]] || [[ $1 == "LT05"* ]] || [[ $1 == "LE07"* ]] || [[ $1 ==
     /usr/GERS/Fmask_4_2/application/run_Fmask_4_2.sh $MCROOT "$@"
 
     ## Copy outputs from workdir
-    OUTDIR=${OUTDIR}/${SCENE_ID}
     mkdir -p $OUTDIR
     OUT_PATTERNS="$WORKDIR/${SCENE_ID}_toa_*.tif $WORKDIR/${SCENE_ID}_sr_*.tif $WORKDIR/${SCENE_ID}_bt_*.tif $WORKDIR/${SCENE_ID}_radsat_qa.tif $WORKDIR/${SCENE_ID}_sensor*.tif $WORKDIR/${SCENE_ID}_solar*.tif"
     for f in $OUT_PATTERNS; do
@@ -88,12 +86,14 @@ if [[ $1 == "LT04"* ]] || [[ $1 == "LT05"* ]] || [[ $1 == "LE07"* ]] || [[ $1 ==
 ## SENTINEL-2
 elif [[ $1 == "S2"* ]]; then
     SAFENAME=$1
-
-    SAFEDIR=/mnt/input-dir/${SAFENAME}
+    SAFEDIR=${INDIR}/${SAFENAME}
     SCENE_ID=${SAFENAME:0:-5}
-    WORKDIR=/work/${SAFENAME}
+    # Set default OUTDIR
+    if [ -z "${OUTDIR}" ]; then
+        OUTDIR=/mnt/output-dir/${SCENE_ID}
+    fi
     JP2_PATTERNS=$(find ${INDIR} -name "${SCENE_ID}_*.jp2" -o -name "${SCENE_ID}_*.JP2")
-
+    WORKDIR=/work/${SCENE_ID}
 
     # ensure that workdir/sceneid is clean
     rm -rf ${WORKDIR}
@@ -126,7 +126,6 @@ elif [[ $1 == "S2"* ]]; then
     /usr/GERS/Fmask_4_2/application/run_Fmask_4_2.sh $MCROOT "$@"
 
     ## Copy outputs from workdir
-    OUTDIR=${OUTDIR}/${SCENE_ID}
     mkdir -p $OUTDIR
     OUT_PATTERNS="${IMG_DATA}/${SCENE_ID}_sr_*.tif"
     for f in $OUT_PATTERNS; do
