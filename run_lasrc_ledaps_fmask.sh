@@ -62,10 +62,19 @@ if [[ $1 == "LT04"* ]] || [[ $1 == "LT05"* ]] || [[ $1 == "LE07"* ]] || [[ $1 ==
     for f in $OUT_PATTERNS; do
         cp $f $OUTDIR/$(basename $f)
     done
+    # Check if Fmask exists because it is not generated when 100% of image is cloud
     OUT_PATTERNS="$WORKDIR/${SCENE_ID}_Fmask4*.tif"
-    for f in $OUT_PATTERNS; do
-        cp $f $OUTDIR/${SCENE_ID}_Fmask4.tif
-    done
+    if ls $OUT_PATTERNS* 1> /dev/null 2>&1; then
+        # echo "files do exist"
+        for f in $OUT_PATTERNS; do
+            cp $f $OUTDIR/${SCENE_ID}_Fmask4.tif
+        done
+    else
+        # if Fmask does not exist create a copy image with values set to 4 (cloud) and keeps nodata as nodata
+        echo "Generating synthetic 100% Cloud Fmask"
+        $REFIMG="${IMG_DATA}/${SCENE_ID}_sr_band4.tif"
+        gdal_calc.py -A $REFIMG --outfile=$OUTDIR/${SCENE_ID}_Fmask4.tif --calc="4*(A>-9999)"
+    fi
     for f in $MTD_FILES; do
         cp $WORKDIR/$(basename $f) $OUTDIR/$(basename $f)
     done
@@ -114,9 +123,17 @@ elif [[ $1 == "S2"* ]]; then
         cp $f $OUTDIR/$(basename $f)
     done
     OUT_PATTERNS="${GRANULE_SCENE}/FMASK_DATA/*_Fmask4*.tif"
-    for f in $OUT_PATTERNS; do
-        cp $f $OUTDIR/${SCENE_ID}_Fmask4.tif
-    done
+    # if Fmask does not exist create a copy image with values set to 4 (cloud) and keeps nodata as nodata
+    if ls $OUT_PATTERNS* 1> /dev/null 2>&1; then
+        for f in $OUT_PATTERNS; do
+            cp $f $OUTDIR/${SCENE_ID}_Fmask4.tif
+        done
+    else
+        # if Fmask does not exist set image values to 4 (cloud) and keeps nodata as nodata
+        echo "Generating synthetic 100% Cloud Fmask"
+        $REFIMG="${IMG_DATA}/${SCENE_ID}_sr_band8a.tif"
+        gdal_calc.py -A $REFIMG --outfile=$OUTDIR/${SCENE_ID}_Fmask4.tif --calc="4*(A>-9999)"
+    fi
     rm -rf $WORKDIR
 fi
 exit 0
