@@ -90,7 +90,6 @@ elif [[ $1 == "S2"* ]]; then
     fi
 
     WORKDIR=/work/${SAFENAME}
-#    OUTDIR=/mnt/output-dir/
     JP2_PATTERNS=$(find ${INDIR} -name "${SCENE_ID}_*.jp2" -o -name "${SCENE_ID}_*.JP2")
     # ensure that workdir/sceneid is clean
     rm -rf ${WORKDIR}
@@ -122,6 +121,9 @@ elif [[ $1 == "S2"* ]]; then
     for f in $OUT_PATTERNS; do
         cp $f $OUTDIR/$(basename $f)
     done
+    #Copy XMLs
+    cp $WORKDIR/MTD_MSIL1C.xml $OUTDIR
+    cp $GRANULE_SCENE/MTD_TL.xml $OUTDIR
     OUT_PATTERNS="${GRANULE_SCENE}/FMASK_DATA/*_Fmask4*.tif"
     # if Fmask does not exist create a copy image with values set to 4 (cloud) and keeps nodata as nodata
     if ls $OUT_PATTERNS* 1> /dev/null 2>&1; then
