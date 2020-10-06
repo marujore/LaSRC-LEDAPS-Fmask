@@ -1,5 +1,5 @@
 FROM ubuntu:18.04
-MAINTAINER "Rennan Marujo <rennanmarujo@gmail.com>"
+LABEL maintainer="Rennan Marujo <rennanmarujo@gmail.com>"
 
 USER root
 
@@ -129,7 +129,6 @@ WORKDIR /tmp
 # RUN curl -L https://github.com/USGS-EROS/espa-surface-reflectance/archive/master.tar.gz -o /tmp/lasrc.tar.gz && \
 # RUN curl -L https://github.com/USGS-EROS/espa-surface-reflectance/archive/dev_lasrc_v2.0.1.tar.gz -o /tmp/lasrc.tar.gz && \
 RUN curl -L https://github.com/marujore/espa-surface-reflectance/archive/dev_lasrc_v2.0.1.tar.gz -o /tmp/lasrc.tar.gz && \
-
     tar xzf /tmp/lasrc.tar.gz && \
     # mv espa-surface-reflectance-master /opt/espa-surface-reflectance && \
     mv espa-surface-reflectance-dev_lasrc_v2.0.1 /opt/espa-surface-reflectance && \
