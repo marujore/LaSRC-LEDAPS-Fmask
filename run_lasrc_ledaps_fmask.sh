@@ -128,7 +128,7 @@ elif [[ $1 == "S2"* ]]; then
     # if Fmask does not exist create a copy image with values set to 4 (cloud) and keeps nodata as nodata
     if ls $OUT_PATTERNS* 1> /dev/null 2>&1; then
         for f in $OUT_PATTERNS; do
-            gdalwarp -tr 10 10 -r near -co "COMPRESS=PACKBITS" $f $OUTDIR/${SCENE_ID}_Fmask4.tif
+            gdalwarp -tr 10 10 -r near -overwrite -co "COMPRESS=PACKBITS" $f $OUTDIR/${SCENE_ID}_Fmask4.tif
         done
     else
         # if Fmask does not exist set image values to 4 (cloud) and keeps nodata as nodata
