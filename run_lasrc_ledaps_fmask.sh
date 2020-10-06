@@ -8,7 +8,7 @@ if [ $1 == "--help" ]; then
     -v /path/to/output:/mnt/output-dir:rw \
     -v /path/to/lasrc_auxiliaries/L8:/mnt/lasrc-aux:ro \
     -v /path/to/ledaps_auxiliaries:/mnt/ledaps-aux:ro
-    -t lasrcfmask <LANDSAT-4,5,7,8 FOLDER OR SENTINEL-2.SAFE>"
+    -t lasrc_ledaps_fmask <LANDSAT-4,5,7,8 FOLDER OR SENTINEL-2.SAFE>"
     exit 0
 fi
 # Set default directories to the INDIR and OUTDIR
