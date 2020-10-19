@@ -49,8 +49,10 @@ if [[ $1 == "LT04"* ]] || [[ $1 == "LT05"* ]] || [[ $1 == "LE07"* ]] || [[ $1 ==
     convert_lpgs_to_espa --mtl=${SCENE_ID}_MTL.txt
     if [[ $1 == "LC08"* ]]; then
         do_lasrc_landsat.py --xml ${SCENE_ID}.xml # --write_toa
+        OUT_PATTERNS="$WORKDIR/${SCENE_ID}_toa_*.tif $WORKDIR/${SCENE_ID}_sr_*.tif $WORKDIR/${SCENE_ID}_bt_*.tif $WORKDIR/${SCENE_ID}_radsat_qa.tif $WORKDIR/${SCENE_ID}_sensor*.tif $WORKDIR/${SCENE_ID}_solar*.tif"
     else #Landsat 4,5,7
         do_ledaps.py --xml ${SCENE_ID}.xml
+        OUT_PATTERNS="$WORKDIR/${SCENE_ID}_sr_*.tif $WORKDIR/${SCENE_ID}_bt_*.tif $WORKDIR/${SCENE_ID}_radsat_qa.tif $WORKDIR/${SCENE_ID}_sensor*.tif $WORKDIR/${SCENE_ID}_solar*.tif"
     fi
     convert_espa_to_gtif --xml=${SCENE_ID}.xml --gtif=$SCENE_ID --del_src_files
     ##FMASK
@@ -58,7 +60,6 @@ if [[ $1 == "LT04"* ]] || [[ $1 == "LT05"* ]] || [[ $1 == "LE07"* ]] || [[ $1 ==
     /usr/GERS/Fmask_4_2/application/run_Fmask_4_2.sh $MCROOT "$@"
     ## Copy outputs from workdir
     mkdir -p $OUTDIR
-    OUT_PATTERNS="$WORKDIR/${SCENE_ID}_toa_*.tif $WORKDIR/${SCENE_ID}_sr_*.tif $WORKDIR/${SCENE_ID}_bt_*.tif $WORKDIR/${SCENE_ID}_radsat_qa.tif $WORKDIR/${SCENE_ID}_sensor*.tif $WORKDIR/${SCENE_ID}_solar*.tif"
     for f in $OUT_PATTERNS; do
         cp $f $OUTDIR/$(basename $f)
     done
