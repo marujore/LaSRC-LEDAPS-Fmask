@@ -1,5 +1,5 @@
 FROM ubuntu:18.04
-LABEL maintainer="Rennan Marujo <rennanmarujo@gmail.com>"
+LABEL maintainer="Brazil Data Cube Team <brazildatacube@inpe.br>"
 
 USER root
 
