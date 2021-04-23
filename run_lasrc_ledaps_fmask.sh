@@ -61,14 +61,14 @@ if [[ $1 == "LT04"* ]] || [[ $1 == "LT05"* ]] || [[ $1 == "LE07"* ]] || [[ $1 ==
     ## Copy outputs from workdir
     mkdir -p $OUTDIR
     for f in $OUT_PATTERNS; do
-        cp $f $OUTDIR/$(basename $f)
+        gdal_translate -co "COMPRESS=DEFLATE" $f $OUTDIR/$(basename $f)
     done
     # Check if Fmask exists because it is not generated when 100% of image is cloud
     OUT_PATTERNS="$WORKDIR/${SCENE_ID}_Fmask4*.tif"
     if ls $OUT_PATTERNS* 1> /dev/null 2>&1; then
         # echo "files do exist"
         for f in $OUT_PATTERNS; do
-            cp $f $OUTDIR/${SCENE_ID}_Fmask4.tif
+            gdal_translate -co "COMPRESS=DEFLATE" $f $OUTDIR/${SCENE_ID}_Fmask4.tif
         done
     else
         # if Fmask does not exist create a copy image with values set to 4 (cloud) and keeps nodata as nodata
@@ -120,7 +120,7 @@ elif [[ $1 == "S2"* ]]; then
     mkdir -p $OUTDIR
     OUT_PATTERNS="${IMG_DATA}/${SCENE_ID}_sr_*.tif"
     for f in $OUT_PATTERNS; do
-        cp $f $OUTDIR/$(basename $f)
+        gdal_translate -co "COMPRESS=DEFLATE" $f $OUTDIR/$(basename $f)
     done
     #Copy XMLs
     cp $WORKDIR/MTD_MSIL1C.xml $OUTDIR
@@ -129,7 +129,7 @@ elif [[ $1 == "S2"* ]]; then
     # if Fmask does not exist create a copy image with values set to 4 (cloud) and keeps nodata as nodata
     if ls $OUT_PATTERNS* 1> /dev/null 2>&1; then
         for f in $OUT_PATTERNS; do
-            gdalwarp -tr 10 10 -r near -overwrite -co "COMPRESS=PACKBITS" $f $OUTDIR/${SCENE_ID}_Fmask4.tif
+            gdalwarp -tr 10 10 -r near -overwrite -co "COMPRESS=DEFLATE" $f $OUTDIR/${SCENE_ID}_Fmask4.tif
         done
     else
         # if Fmask does not exist set image values to 4 (cloud) and keeps nodata as nodata
