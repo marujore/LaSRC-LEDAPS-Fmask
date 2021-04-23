@@ -49,7 +49,7 @@ RUN cd hdf-4.2.15 && \
 
 #Build HDF-EOS2
 WORKDIR /tmp
-RUN curl https://observer.gsfc.nasa.gov/ftp/edhs/hdfeos/latest_release/HDF-EOS2.20v1.00.tar.Z -o /tmp/hdfeos.tar.Z
+RUN curl https://git.earthdata.nasa.gov/rest/git-lfs/storage/DAS/hdfeos/cb0f900d2732ab01e51284d6c9e90d0e852d61bba9bce3b43af0430ab5414903?response-content-disposition=attachment%3B%20filename%3D%22HDF-EOS2.20v1.00.tar.Z%22%3B%20filename*%3Dutf-8%27%27HDF-EOS2.20v1.00.tar.Z -o /tmp/hdfeos.tar.Z
 RUN tar xzf /tmp/hdfeos.tar.Z -C /opt
 WORKDIR /opt/hdfeos
 RUN ./configure CC=/usr/bin/h4cc --prefix=/opt/hdfeos/build && \
@@ -61,7 +61,7 @@ RUN ./configure CC=/usr/bin/h4cc --prefix=/opt/hdfeos/build && \
 
 #Build HDF-EOS5
 WORKDIR /tmp
-RUN curl https://observer.gsfc.nasa.gov/ftp/edhs/hdfeos5/latest_release/HDF-EOS5.1.16.tar.Z -o /tmp/hdfeos5.tar.Z
+RUN curl https://git.earthdata.nasa.gov/rest/git-lfs/storage/DAS/hdfeos5/7054de24b90b6d9533329ef8dc89912c5227c83fb447792103279364e13dd452?response-content-disposition=attachment%3B%20filename%3D%22HDF-EOS5.1.16.tar.Z%22%3B%20filename*%3Dutf-8%27%27HDF-EOS5.1.16.tar.Z -o /tmp/hdfeos5.tar.Z
 RUN tar xzf /tmp/hdfeos5.tar.Z -C /opt
 WORKDIR /opt/hdfeos5
 RUN ./configure CC=/usr/bin/h5cc --prefix=/opt/hdfeos5/build --with-szlib=/usr/ && \
@@ -110,7 +110,6 @@ ENV ESPALIB=/opt/espa-product-formatter/raw_binary/lib
 
 # product formatter
 WORKDIR /tmp
-#RUN curl -L https://github.com/USGS-EROS/espa-product-formatter/archive/product_formatter_v1.19.0.tar.gz -o /tmp/product_formatter.tar.gz && \
 RUN curl -L https://github.com/brazil-data-cube/espa-product-formatter/archive/product_formatter_v1.19.0.tar.gz -o /tmp/product_formatter.tar.gz && \
    tar xzf /tmp/product_formatter.tar.gz && \
    mv espa-product-formatter-product_formatter_v1.19.0 /opt/espa-product-formatter && \
@@ -126,11 +125,8 @@ RUN make && \
 
 # surface reflectance LaSRC
 WORKDIR /tmp
-# RUN curl -L https://github.com/USGS-EROS/espa-surface-reflectance/archive/master.tar.gz -o /tmp/lasrc.tar.gz && \
-# RUN curl -L https://github.com/USGS-EROS/espa-surface-reflectance/archive/dev_lasrc_v2.0.1.tar.gz -o /tmp/lasrc.tar.gz && \
 RUN curl -L https://github.com/brazil-data-cube/espa-surface-reflectance/archive/dev_lasrc_v2.0.1.tar.gz -o /tmp/lasrc.tar.gz && \
     tar xzf /tmp/lasrc.tar.gz && \
-    # mv espa-surface-reflectance-master /opt/espa-surface-reflectance && \
     mv espa-surface-reflectance-dev_lasrc_v2.0.1 /opt/espa-surface-reflectance && \
     rm /tmp/lasrc.tar.gz
 
