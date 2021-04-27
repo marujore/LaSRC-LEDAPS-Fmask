@@ -1,6 +1,6 @@
-# LaSRC 2.0.1, LEDAPS 3.4.0 and FMASK 4.2
+# LaSRC 2.0.1, LEDAPS 3.4.0 and FMASK 4.3
 
-Landsat-4,5,7 atmospheric correction through LEDAPS 3.4.0, Landsat-8 and Sentinel-2 atmospheric correction through LaSRC 2.0.1, cloud masking FMASK 4.2.
+Landsat-4,5,7 atmospheric correction through LEDAPS 3.4.0, Landsat-8 and Sentinel-2 atmospheric correction through LaSRC 2.0.1, cloud masking FMASK 4.3.
 
 ## Dependencies
 
@@ -17,7 +17,7 @@ Download the ``https://edclpdsftp.cr.usgs.gov/downloads/auxiliaries/lasrc_auxili
 
 ## Installation
 
-1. [Download FMask 4.2 standalone Linux installer](https://github.com/GERSL/Fmask)
+1. [Download FMask 4.3 standalone Linux installer](https://github.com/GERSL/Fmask)
    and copy it into the root of this repository.
 
 2. Run
@@ -61,3 +61,8 @@ $ docker run --rm \
 ```
 
 Results are written on mounted `/mnt/output-dir/SCENEID`.
+
+## Acknowledgements
+
+Copyright for portions of FMASK docker 4.0 code are held by Dion Häfner, 2018 as part of project fmaskilicious (https://github.com/DHI-GRAS/fmaskilicious).
+Copyright for portions of LaSRC 1.4 docker code are held by DHI GRAS A/S, 2018 as part of project lasrclicious (https://github.com/DHI-GRAS/lasrclicious).

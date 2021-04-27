@@ -57,7 +57,7 @@ if [[ $1 == "LT04"* ]] || [[ $1 == "LT05"* ]] || [[ $1 == "LE07"* ]] || [[ $1 ==
     convert_espa_to_gtif --xml=${SCENE_ID}.xml --gtif=$SCENE_ID --del_src_files
     ##FMASK
     MCROOT=/usr/local/MATLAB/MATLAB_Runtime/v96
-    /usr/GERS/Fmask_4_2/application/run_Fmask_4_2.sh $MCROOT "$@"
+    /usr/GERS/Fmask_4_3/application/run_Fmask_4_3.sh $MCROOT "$@"
     ## Copy outputs from workdir
     mkdir -p $OUTDIR
     for f in $OUT_PATTERNS; do
@@ -115,7 +115,7 @@ elif [[ $1 == "S2"* ]]; then
     ##FMASK
     MCROOT=/usr/local/MATLAB/MATLAB_Runtime/v96
     cd ${GRANULE_SCENE}
-    /usr/GERS/Fmask_4_2/application/run_Fmask_4_2.sh $MCROOT "$@"
+    /usr/GERS/Fmask_4_3/application/run_Fmask_4_3.sh $MCROOT "$@"
     ## Copy outputs from workdir
     mkdir -p $OUTDIR
     OUT_PATTERNS="${IMG_DATA}/${SCENE_ID}_sr_*.tif"
