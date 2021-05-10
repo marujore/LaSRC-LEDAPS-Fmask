@@ -6,7 +6,6 @@ Landsat-4,5,7 atmospheric correction through LEDAPS 3.4.0, Landsat-8 and Sentine
 
 - Docker
 
-
 ## LEDAPS Auxiliary Data
 
 Download the baseline auxiliary files ``http://edclpdsftp.cr.usgs.gov/downloads/auxiliaries/ledaps_auxiliary/ledaps_aux.1978-2017.tar.gz``.
