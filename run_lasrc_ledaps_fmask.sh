@@ -21,6 +21,10 @@ fi
 if [[ $1 == "LT04"* ]] || [[ $1 == "LT05"* ]] || [[ $1 == "LE07"* ]] || [[ $1 == "LC08"* ]]; then
     SCENE_ID=$1
     WORKDIR=/work/${SCENE_ID}
+    # ensure that workdir/sceneid is clean
+    rm -rf ${WORKDIR}
+    mkdir -p $WORKDIR
+    cd $WORKDIR
 
     if [ -z "${OUTDIR}" ]; then
         OUTDIR=/mnt/output-dir/${SCENE_ID}
@@ -28,10 +32,6 @@ if [[ $1 == "LT04"* ]] || [[ $1 == "LT05"* ]] || [[ $1 == "LE07"* ]] || [[ $1 ==
 
     MTD_FILES=$(find ${INDIR} -name "${SCENE_ID}_MTL.txt" -o -name "${SCENE_ID}_ANG.txt")
     TIF_PATTERNS="${SCENE_ID}_*.tif -iname ${SCENE_ID}_*.TIF"
-    # ensure that workdir/sceneid is clean
-    rm -rf ${WORKDIR}
-    mkdir -p $WORKDIR
-    cd $WORKDIR
     # only make files with the correct scene ID visible
     for f in $(find ${INDIR} -iname "${SCENE_ID}*.tif"); do
         echo $f
@@ -68,13 +68,13 @@ if [[ $1 == "LT04"* ]] || [[ $1 == "LT05"* ]] || [[ $1 == "LE07"* ]] || [[ $1 ==
     if ls $OUT_PATTERNS* 1> /dev/null 2>&1; then
         # echo "files do exist"
         for f in $OUT_PATTERNS; do
-            gdal_translate -co "COMPRESS=DEFLATE" $f $OUTDIR/${SCENE_ID}_Fmask4.tif
+            gdal_translate -co "COMPRESS=DEFLATE" -a_nodata 255 $f $OUTDIR/${SCENE_ID}_Fmask4.tif
         done
     else
         # if Fmask does not exist create a copy image with values set to 4 (cloud) and keeps nodata as nodata
         echo "Generating synthetic 100% Cloud Fmask"
-        $REFIMG="${IMG_DATA}/${SCENE_ID}_sr_band4.tif"
-        gdal_calc.py -A $REFIMG --outfile=$OUTDIR/${SCENE_ID}_Fmask4.tif --calc="4*(A>-9999)"
+        $REFIMG="${IMG_DATA}/${SCENE_ID}_B4.TIF"
+        gdal_calc.py --NoDataValue=255 -A $REFIMG --outfile=$OUTDIR/${SCENE_ID}_Fmask4.tif --calc="(logical_or(A>0, A<0)*4)+((A==0)*255)"
     fi
     for f in $MTD_FILES; do
         cp $WORKDIR/$(basename $f) $OUTDIR/$(basename $f)
@@ -85,10 +85,6 @@ elif [[ $1 == "S2"* ]]; then
     SAFENAME=$1
     SAFEDIR=${INDIR}/${SAFENAME}
     SCENE_ID=${SAFENAME:0:-5}
-
-    if [ -z "${OUTDIR}" ]; then
-        OUTDIR=/mnt/output-dir/${SCENE_ID}
-    fi
 
     WORKDIR=/work/${SAFENAME}
     JP2_PATTERNS=$(find ${INDIR} -name "${SCENE_ID}_*.jp2" -o -name "${SCENE_ID}_*.JP2")
@@ -105,6 +101,11 @@ elif [[ $1 == "S2"* ]]; then
     #Copy XMLs
     cp $WORKDIR/MTD_MSIL1C.xml $IMG_DATA
     cp $GRANULE_SCENE/MTD_TL.xml $IMG_DATA
+
+    if [ -z "${OUTDIR}" ]; then
+        OUTDIR=/mnt/output-dir/${SCENE_ID}
+    fi
+
     # run ESPA stack
     convert_sentinel_to_espa
     for entry in `ls ${IMG_DATA}/S2*.xml`; do
@@ -129,13 +130,15 @@ elif [[ $1 == "S2"* ]]; then
     # if Fmask does not exist create a copy image with values set to 4 (cloud) and keeps nodata as nodata
     if ls $OUT_PATTERNS* 1> /dev/null 2>&1; then
         for f in $OUT_PATTERNS; do
-            gdalwarp -tr 10 10 -r near -overwrite -co "COMPRESS=DEFLATE" $f $OUTDIR/${SCENE_ID}_Fmask4.tif
+            gdalwarp -tr 10 10 -r near -overwrite -co "COMPRESS=DEFLATE" -dstnodata 255 $f $OUTDIR/${SCENE_ID}_Fmask4.tif
         done
     else
         # if Fmask does not exist set image values to 4 (cloud) and keeps nodata as nodata
         echo "Generating synthetic 100% Cloud Fmask"
-        $REFIMG="${IMG_DATA}/${SCENE_ID}_sr_band8a.tif"
-        gdal_calc.py -A $REFIMG --outfile=$OUTDIR/${SCENE_ID}_Fmask4.tif --calc="4*(A>-9999)"
+        for f in $(find ${IMG_DATA} -iname "*_B8A.jp2"); do
+            REFIMG=$f
+        done
+        gdal_calc.py --NoDataValue=255 -A $REFIMG --outfile=$OUTDIR/${SCENE_ID}_Fmask4.tif --calc="(logical_or(A>0, A<0)*4)+((A==0)*255)"
     fi
     rm -rf $WORKDIR
 fi

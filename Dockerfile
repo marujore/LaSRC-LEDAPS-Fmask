@@ -49,7 +49,8 @@ RUN cd hdf-4.2.15 && \
 
 #Build HDF-EOS2
 WORKDIR /tmp
-RUN curl https://git.earthdata.nasa.gov/rest/git-lfs/storage/DAS/hdfeos/cb0f900d2732ab01e51284d6c9e90d0e852d61bba9bce3b43af0430ab5414903?response-content-disposition=attachment%3B%20filename%3D%22HDF-EOS2.20v1.00.tar.Z%22%3B%20filename*%3Dutf-8%27%27HDF-EOS2.20v1.00.tar.Z -o /tmp/hdfeos.tar.Z
+# RUN curl https://git.earthdata.nasa.gov/rest/git-lfs/storage/DAS/hdfeos/cb0f900d2732ab01e51284d6c9e90d0e852d61bba9bce3b43af0430ab5414903?response-content-disposition=attachment%3B%20filename%3D%22HDF-EOS2.20v1.00.tar.Z%22%3B%20filename*%3Dutf-8%27%27HDF-EOS2.20v1.00.tar.Z -o /tmp/hdfeos.tar.Z
+RUN curl https://distfiles.macports.org/hdfeos/HDF-EOS2.20v1.00.tar.Z -o /tmp/hdfeos.tar.Z
 RUN tar xzf /tmp/hdfeos.tar.Z -C /opt
 WORKDIR /opt/hdfeos
 RUN ./configure CC=/usr/bin/h4cc --prefix=/opt/hdfeos/build && \
